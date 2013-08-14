@@ -98,6 +98,9 @@ module RspecApiDocumentation
 
       def requests
         super.map do |hash|
+          # Jruby -1.9 Enumerable bug workaround
+          hash[:response_headers] = hash[:response_headers].to_hash
+
           if @host
             hash[:curl] = hash[:curl].output(@host) if hash[:curl].is_a? RspecApiDocumentation::Curl
           else
