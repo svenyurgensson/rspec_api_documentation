@@ -96,6 +96,22 @@ module RspecApiDocumentation
         }
       end
 
+      
+      def pack_binary(str)
+        str.force_encoding("ASCII-8BIT")
+        str.strip!
+         
+        headers, body = str.split("\r\n\r\n")
+        if body
+          binary, _, after = body.partition("\r\n")
+           
+          # headers + "\r\n\r\n" + binary.inspect + "\r\n" + after
+          headers + "\r\n\r\n" + [binary].pack('m') + "\r\n" + after
+        else
+          str
+        end
+      end
+
       def requests
         super.map do |hash|
           # Jruby -1.9 Enumerable bug workaround
@@ -106,9 +122,18 @@ module RspecApiDocumentation
           else
             hash[:curl] = nil
           end
+
+          if hash[:request_body]
+            hash[:request_body] = pack_binary(hash[:request_body])
+          end
+          if hash[:curl]
+            hash[:curl] = pack_binary(hash[:curl])
+          end
+
           hash
         end
       end
+      
     end
   end
 end
