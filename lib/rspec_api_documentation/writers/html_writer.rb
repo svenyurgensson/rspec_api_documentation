@@ -16,13 +16,13 @@ module RspecApiDocumentation
       end
 
       def write
-        File.open(configuration.docs_dir.join("index.html"), "w+") do |f|
+        File.open(configuration.docs_dir.join("index.html"), "wb+") do |f|
           f.write HtmlIndex.new(index, configuration).render
         end
         index.examples.each do |example|
           html_example = HtmlExample.new(example, configuration)
           FileUtils.mkdir_p(configuration.docs_dir.join(html_example.dirname))
-          File.open(configuration.docs_dir.join(html_example.dirname, html_example.filename), "w+") do |f|
+          File.open(configuration.docs_dir.join(html_example.dirname, html_example.filename), "wb+") do |f|
             f.write html_example.render
           end
         end
